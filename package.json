@@ -1,10 +1,11 @@
 {
   "name": "@5stones/nest-oidc",
   "version": "1.0.0-alpha.0",
-  "description": "",
-  "author": "",
-  "private": true,
-  "license": "UNLICENSED",
+  "description": "An OIDC authentication module for NestJS APIs",
+  "homepage": "https://github.com/5-stones/nest-oidc#readme",
+  "author": "Jacob Spizziri <jspizziri@weare5stones.com>",
+  "private": false,
+  "license": "MIT",
   "main": "dist/index.js",
   "scripts": {
     "prebuild": "rimraf dist",
@@ -15,7 +16,10 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "version": "npm run changelog && git add CHANGELOG.md",
+    "postversion": "git push && git push --tags",
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0"
   },
   "dependencies": {
     "jexl": "^2.3.0",
@@ -45,6 +49,7 @@
     "@types/supertest": "^2.0.10",
     "@typescript-eslint/eslint-plugin": "^4.19.0",
     "@typescript-eslint/parser": "^4.19.0",
+    "conventional-changelog-cli": "^2.1.1",
     "eslint": "^7.22.0",
     "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-prettier": "^3.3.1",

@@ -1,5 +1,9 @@
 # NestJS OIDC
 
+- [Install](#install)
+- [Basic Setup & Usage](#basic-setup--usage)
+- [Access Levels](#access-levels)
+- [Release](#release)
 
 ## Install
 
@@ -36,7 +40,7 @@ import { AuthModule } from '@5stones/nest-oidc';
 export class AppModule {}
 ```
 
-This will add the JWT validation strategy, and will verify any incomming JWT's
+This will add the JWT validation strategy, and will verify any incoming JWT's
 against the OIDC authorities public keys.
 
 
@@ -129,3 +133,25 @@ export class FooResolver {
 
 In this scenario, the mutation can only be executed by an `ADMIN` but the query
 can be executed by any user with a valid JWT.
+
+
+## Release
+
+The standard release command for this project is:
+```
+npm version [<newversion> | major | minor | patch | premajor | preminor | prepatch | prerelease | from-git]
+```
+
+This command will:
+
+1. Generate/update the Changelog
+1. Bump the package version
+1. Tag & pushing the commit
+
+
+e.g.
+
+```
+npm version 1.2.17
+npm version patch // 1.2.17 -> 1.2.18
+```
