@@ -1,0 +1,2 @@
+declare module "@nestjs/graphql" {
+}
