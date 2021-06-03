@@ -1,14 +1,15 @@
 import { Module, HttpModule, DynamicModule } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 
-import { ACCESS_EVALUATORS, OIDC_AUTHORITY } from './consts';
-import { AccessLevelEvaluator } from './interfaces';
+import { JWT_MAPPER, OIDC_AUTHORITY, ROLE_EVALUATORS } from './consts';
+import { RoleEvaluator } from './interfaces';
 import { AuthService } from './services';
 import { JwtStrategy } from './strategies';
 
 export interface AuthModuleRegistrationOptions {
   oidcAuthority: string;
-  accessLevelEvaluators?: AccessLevelEvaluator[];
+  roleEvaluators?: RoleEvaluator[];
+  jwtMapper?: (payload: any) => any;
 }
 
 @Module({})
@@ -28,8 +29,12 @@ export class AuthModule {
           useValue: options.oidcAuthority,
         },
         {
-          provide: ACCESS_EVALUATORS,
-          useValue: options.accessLevelEvaluators || [],
+          provide: ROLE_EVALUATORS,
+          useValue: options.roleEvaluators || [],
+        },
+        {
+          provide: JWT_MAPPER,
+          useValue: options.jwtMapper ? options.jwtMapper : (payload) => payload,
         },
       ],
     };

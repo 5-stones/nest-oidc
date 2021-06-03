@@ -3,9 +3,8 @@ import * as jsonwebtoken from 'jsonwebtoken';
 import { JwksClient } from 'jwks-rsa';
 import * as jexl from 'jexl';
 
-import { ACCESS_EVALUATORS, OIDC_AUTHORITY } from '../consts';
-import { AccessLevelEvaluator } from '../interfaces';
-import { JwtUser } from '../dto';
+import { JWT_MAPPER, OIDC_AUTHORITY, ROLE_EVALUATORS } from '../consts';
+import { RoleEvaluator } from '../interfaces';
 
 const length = (elem: any) => elem ? elem.length : 0;
 const mapValue = (obj: any) => obj ? obj.map(value => ({ value })) : [];
@@ -32,10 +31,12 @@ export class AuthService {
   private jwksClient: Promise<JwksClient>;
 
   constructor(
-    @Inject(ACCESS_EVALUATORS)
-    protected readonly evaluators: AccessLevelEvaluator[],
+    @Inject(ROLE_EVALUATORS)
+    protected readonly evaluators: RoleEvaluator[],
     @Inject(OIDC_AUTHORITY)
     protected readonly oidcAuthority: string,
+    @Inject(JWT_MAPPER)
+    protected readonly jwtMapper: (payload: any) => any,
     protected readonly httpService: HttpService,
   ) {
     this.jwksClient = this.getJwksClient();
@@ -87,29 +88,28 @@ export class AuthService {
     };
   }
 
-  async validate(payload: any): Promise<JwtUser> {
-    const accessLevels: string[] = [];
+  async validate(payload: any): Promise<any> {
+    const user: any = this.jwtMapper(payload);
 
-    for (const evaluator of this.evaluators) {
-      try {
-        let hasAccessLevel = await jexl.eval(evaluator.expression, { jwt: payload });
-        hasAccessLevel = !!hasAccessLevel; // explicitly cast to boolean
+    if (this.evaluators?.length) {
+      const roles: string[] = [];
 
-        if (hasAccessLevel) {
-          accessLevels.push(evaluator.level);
+      for (const evaluator of this.evaluators) {
+        try {
+          let hasRole = await jexl.eval(evaluator.expression, { jwt: payload });
+          hasRole = !!hasRole; // explicitly cast to boolean
+
+          if (hasRole) {
+            roles.push(evaluator.role);
+          }
+        } catch (err) {
+          throw new Error(`Error evaluating JWT role '${evaluator.role}'.`);
         }
-      } catch (err) {
-        throw new Error(`Error evaluating JWT access level '${evaluator.level}'.`);
       }
+
+      user.roles = roles;
     }
 
-    return {
-      id: payload.sub,
-      email: payload.email,
-      emailVerified: payload.email_verified,
-      name: payload.name,
-      client: payload.azp,
-      accessLevels,
-    };
+    return user;
   }
 }

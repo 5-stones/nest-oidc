@@ -1,1 +1,1 @@
-export { AccessLevelEvaluator } from './access-level-evaluator';
+export { RoleEvaluator } from './role-evaluator';
