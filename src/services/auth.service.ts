@@ -1,8 +1,10 @@
-import { Injectable, HttpService } from '@nestjs/common';
+import { Injectable, Inject, HttpService } from '@nestjs/common';
 import * as jsonwebtoken from 'jsonwebtoken';
 import { JwksClient } from 'jwks-rsa';
 import * as jexl from 'jexl';
 
+import { ACCESS_EVALUATORS, OIDC_AUTHORITY } from '../consts';
+import { AccessLevelEvaluator } from '../interfaces';
 import { JwtUser } from '../dto';
 
 const length = (elem: any) => elem ? elem.length : 0;
@@ -28,9 +30,14 @@ interface JwksKey {
 export class AuthService {
   private _oidcConfig: any | null = null;
   private jwksClient: Promise<JwksClient>;
-  private oidcConfigEndpoint: string = `${process.env.OIDC_AUTHORITY}/.well-known/openid-configuration`;
 
-  constructor(protected readonly httpService: HttpService) {
+  constructor(
+    @Inject(ACCESS_EVALUATORS)
+    protected readonly evaluators: AccessLevelEvaluator[],
+    @Inject(OIDC_AUTHORITY)
+    protected readonly oidcAuthority: string,
+    protected readonly httpService: HttpService,
+  ) {
     this.jwksClient = this.getJwksClient();
   }
 
@@ -45,7 +52,7 @@ export class AuthService {
     if (this._oidcConfig) return this._oidcConfig;
 
     const response = await this.httpService
-      .get(this.oidcConfigEndpoint)
+      .get(`${this.oidcAuthority}/.well-known/openid-configuration`)
       .toPromise()
     ;
 
@@ -81,12 +88,19 @@ export class AuthService {
   }
 
   async validate(payload: any): Promise<JwtUser> {
-    let isAdmin = false;
-    try {
-      isAdmin = await jexl.eval(process.env.JWT_EVALUATOR_ADMIN_ACCESS, { jwt: payload });
-      isAdmin = !!isAdmin; // explicitly cast to boolean
-    } catch (err) {
-      throw new Error(`Error evaluating JWT admin access.`);
+    const accessLevels: string[] = [];
+
+    for (const evaluator of this.evaluators) {
+      try {
+        let hasAccessLevel = await jexl.eval(evaluator.expression, { jwt: payload });
+        hasAccessLevel = !!hasAccessLevel; // explicitly cast to boolean
+
+        if (hasAccessLevel) {
+          accessLevels.push(evaluator.level);
+        }
+      } catch (err) {
+        throw new Error(`Error evaluating JWT access level '${evaluator.level}'.`);
+      }
     }
 
     return {
@@ -95,7 +109,7 @@ export class AuthService {
       emailVerified: payload.email_verified,
       name: payload.name,
       client: payload.azp,
-      isAdmin,
+      accessLevels,
     };
   }
 }

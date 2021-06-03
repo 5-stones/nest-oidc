@@ -1,5 +1,4 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-// @ts-ignore
 import { GqlExecutionContext } from '@nestjs/graphql';
 
 export const CurrentUserGraphQL = createParamDecorator(

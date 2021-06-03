@@ -4,5 +4,5 @@ export interface JwtUser {
   emailVerified: string;
   name: string;
   client: string;
-  isAdmin: boolean;
+  accessLevels: string[];
 }
