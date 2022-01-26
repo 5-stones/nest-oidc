@@ -1,3 +1,12 @@
+## [1.1.1](https://github.com/5-stones/nest-oidc/compare/v1.1.0...v1.1.1) (2022-01-26)
+
+
+### Bug Fixes
+
+* **roles:** fix roles disabling logic ([55e7605](https://github.com/5-stones/nest-oidc/commit/55e76054cc3e11c8a8d14e82cfd6f442d655ac3f))
+
+
+
 # [1.1.0](https://github.com/5-stones/nest-oidc/compare/v1.0.0...v1.1.0) (2022-01-26)
 
 

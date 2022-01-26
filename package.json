@@ -1,6 +1,6 @@
 {
   "name": "@5stones/nest-oidc",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "An OIDC authentication module for NestJS APIs",
   "homepage": "https://github.com/5-stones/nest-oidc#readme",
   "author": "Jacob Spizziri <jspizziri@weare5stones.com>",
