@@ -27,6 +27,6 @@ export class JwtAuthGuardGraphQL extends AuthGuard('jwt') {
     const request = this.getRequest(context);
     const user = request.user;
     return user && user.roles
-      && user.roles.some((role) => roles.includes(role));
+      && user.roles.some((role: string) => roles.includes(role));
   }
 }
