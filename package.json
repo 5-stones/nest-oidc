@@ -6,6 +6,13 @@
   "author": "Jacob Spizziri <jspizziri@weare5stones.com>",
   "private": false,
   "license": "MIT",
+  "keywords": [
+    "nest",
+    "nestjs",
+    "nest.js",
+    "oidc",
+    "sso"
+  ],
   "main": "dist/index.js",
   "scripts": {
     "prebuild": "rimraf dist",
