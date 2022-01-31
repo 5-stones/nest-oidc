@@ -1,7 +1,15 @@
 # NestJS OIDC
 
+A configurable OIDC library for NestJS and GraphQL or REST.
+
 - [Install](#install)
 - [Basic Setup & Usage](#basic-setup--usage)
+- [Guards](#guards)
+  - [REST](#rest-guard)
+  - [GraphQL](#graphql-guard)
+- [Current User](#current-user)
+  - [REST](#rest-user)
+  - [GraphQL](#graphql-user)
 - [Roles](#roles)
 - [Role Evaluators](#role-evaluators)
 - [JWT Mapping](#jwt-mapping)
@@ -20,6 +28,10 @@ Install it's peer dependencies:
 ```sh
 npm i @nestjs/jwt @nestjs/passport passport passport-jwt
 ```
+
+:warning: Note: If you're using this package for GraphQL you'll need the
+corresponding GQL libraries installed.
+[Please follow the NestJS documentation first.](https://docs.nestjs.com/graphql/quick-start)
 
 ## Basic Setup & Usage
 
@@ -45,46 +57,184 @@ export class AppModule {}
 This will add the JWT validation strategy, and will verify any incoming JWT's
 against the OIDC authorities public keys.
 
+Finally, you should decorate your endpoints with the provided guards.
 
-Finally, you should decorate your endpoints with the provided guards:
+## Guards
 
+This package exports two basic guards:
+
+- `JwtAuthGuard` - for use in REST contexts.
+- `JwtAuthGuardGraphQL` - for use in GQL contexts.
+
+#### REST Guard
+
+Applying the guard will require a valid JWT to be passed in order to access any
+of the controller endpoints:
+
+```ts
+import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Roles, JwtAuthGuard } from '@5stones/nest-oidc';
+
+@UseGuards(JwtAuthGuard)
+@Controller('cats')
+export class CatsController {
+  @Get()
+  findAll(): string {
+    return 'This action returns all cats';
+  }
+}
+```
+
+You can also use it on specific endpoints:
+
+```ts
+import { Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Roles, JwtAuthGuard } from '@5stones/nest-oidc';
+
+@Controller('cats')
+export class CatsController {
+  @UseGuards(JwtAuthGuard)
+  @Post()
+  create(): string {
+    return 'This action adds a new cat';
+  }
+
+  @Get()
+  findAll(): string {
+    return 'This action returns all cats';
+  }
+}
+```
+
+#### GraphQL Guard
+
+Applying the guard will require a valid JWT to be passed in order to access any
+of the controller endpoints:
+
+```ts
+import { UseGuards } from '@nestjs/common';
+import { Resolver } from '@nestjs/graphql';
+import { JwtAuthGuardGraphQL } from '@5stones/nest-oidc';
+
+@UseGuards(JwtAuthGuardGraphQL)
+@Resolver(() => Cat)
+export class CatResolver {
+  ...
+}
+```
+
+You can also use it on specific endpoints:
+
+```ts
+import { UseGuards } from '@nestjs/common';
+import { Resolver, Query, Mutation } from '@nestjs/graphql';
+import { JwtAuthGuardGraphQL } from '@5stones/nest-oidc';
+
+@Resolver(() => Cat)
+export class CatResolver {
+
+  @Query(() => [Cat], { name: 'allCats' })
+  async findAll() {
+    ...
+  }
+
+  @UseGuards(JwtAuthGuardGraphQL)
+  @Mutation(() => Cat, { name: 'createCat' })
+  async create() {
+    ...
+  }
+}
+```
+
+## Current User
+
+This package exports two basic user decorators:
+
+- `CurrentUser` - for use in REST contexts.
+- `CurrentUserGraphQL` - for use in GQL contexts.
+
+#### REST User
+
+```ts
+import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Roles, JwtAuthGuard, CurrentUser } from '@5stones/nest-oidc';
+
+@UseGuards(JwtAuthGuard)
+@Controller('cats')
+export class CatsController {
+  @Get()
+  findAll(@CurrentUser() user: any): string {
+    return 'This action returns all cats';
+  }
+}
+```
+
+
+#### GraphQL User
+
+
+```ts
+import { UseGuards } from '@nestjs/common';
+import { Resolver, Query } from '@nestjs/graphql';
+import { JwtAuthGuardGraphQL, CurrentUserGraphQL } from '@5stones/nest-oidc';
+
+@UseGuards(JwtAuthGuardGraphQL)
+@Resolver(() => Cat)
+export class CatResolver {
+
+  @Query(() => [Cat], { name: 'allCats' })
+  async findAll(@CurrentUserGraphQL() user: any) {
+    ...
+  }
+}
+```
 
 ## Roles
 
 If you want to permission different endpoints based on properties of the JWT you
-can do so using the `Roles` decorator in conjunction with the Auth Guards. The
-`Roles` decorator will accept a list of `string`s and will check if the user
-object accessing that endpoint has any of those strings in the `user.roles` property.
-It expects the `user.roles` property to be a flat array of strings.
-
+can do so using the `Roles` decorator in conjunction with the Auth Guards (both
+REST & GQL). The `Roles` decorator will accept a list of `string`s and will
+check if the user object accessing that endpoint has any of those strings in the
+`user.roles` property. It expects the `user.roles` property to be a flat array
+of strings.
 
 #### Example
 
 ```ts
 import { UseGuards } from '@nestjs/common';
 import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql';
-import { Roles, JwtAuthGuardGraphQL } from '@5stones/nest-oidc';
+import { JwtAuthGuardGraphQL, Roles } from '@5stones/nest-oidc';
 
 @UseGuards(JwtAuthGuardGraphQL)
-@Resolver(() => Foo)
-export class FooResolver {
-  ...
+@Resolver(() => Cat)
+export class CatResolver {
 
-  @Query(() => [Foo], { name: 'allFoos' })
-  async find(@Args() query: PaginationArgs) {
-    return this.service.findAllWithPaginationArgs(query);
+  @Query(() => [Cat], { name: 'allCats' })
+  async findAll(): Promise<Cat[]> {
+    ...
   }
 
-  @Roles('ADMIN', 'SUPER_USER')
-  @Mutation(() => Foo, { name: 'deleteFoo' })
-  async remove(@Args('id', { type: () => ID }) id: number) {
-    return this.service.remove(id);
+  @Roles()
+  @Query(() => Cat, { name: 'Cat' })
+  async findOne(@Args('id', { type: () => ID }) id: number): Promise<Cat> {
+    ...
+  }
+
+  @Roles('ADMIN', 'SUPER_ADMIN')
+  @Mutation(() => Cat, { name: 'createCat' })
+  async create(): Promise<Cat> {
+    ...
   }
 }
 ```
 
 In this scenario, the mutation can only be executed by an `ADMIN` or `SUPER_ADMIN`
 but the query can be executed by any user with a valid JWT.
+
+:warning: Note: if you do not pass _any_ roles parameters to the `Roles`
+decorator (i.e. `@Roles()`) it is the same as not adding the decorator at all.
+That is to say, any scenario above the `findAll` and the `findOne` queries
+behave identically.
 
 ## Role Evaluators
 
@@ -94,7 +244,8 @@ configuring `roleEvaluators`. `roleEvaluators` are an array of
 `RoleEvaluator` objects which consist of an `expression`, and the access `role`
 that that particular expression grants upon evaluating to `true`.
 
-An `expression` can be any valid [`jexl`](https://www.npmjs.com/package/jexl) expression.
+An `expression` can be any valid [`jexl`](https://www.npmjs.com/package/jexl)
+expression.
 
 #### Example
 
@@ -146,14 +297,14 @@ The user object within your application will now have the following:
 }
 ```
 
-Then you would simply decorate your endpoint with the `@Roles('ADMIN')` annotation
-in order to lock it down to users of that role.
+Then you would simply decorate your endpoint with the `@Roles('ADMIN')`
+annotation in order to lock it down to users of that role.
 
 ## JWT Mapper
 
 By default, the JWT payload is passed as the user into the application. However,
-if you need to map the JWT payload to different structure you can pass the `jwtMapper`
-option:
+if you need to map the JWT payload to different structure you can pass the
+`jwtMapper` option:
 
 ```ts
 import { Module } from '@nestjs/common';
