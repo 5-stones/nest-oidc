@@ -1,3 +1,12 @@
+# [1.2.0](https://github.com/5-stones/nest-oidc/compare/v1.1.1...v1.2.0) (2022-01-31)
+
+
+### Features
+
+* support rest decorators; make graphql optional ([ae1479b](https://github.com/5-stones/nest-oidc/commit/ae1479b643f14a1f115e56d21aa9c8fa40656d02))
+
+
+
 ## [1.1.1](https://github.com/5-stones/nest-oidc/compare/v1.1.0...v1.1.1) (2022-01-26)
 
 
