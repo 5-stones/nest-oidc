@@ -1,3 +1,12 @@
+## [1.2.1](https://github.com/5-stones/nest-oidc/compare/v1.2.0...v1.2.1) (2022-02-04)
+
+
+### Bug Fixes
+
+* **package.json:** update peer dependencies ([cffae2d](https://github.com/5-stones/nest-oidc/commit/cffae2d9eb202b8e5598de487c62fdaa1f5dee6c))
+
+
+
 # [1.2.0](https://github.com/5-stones/nest-oidc/compare/v1.1.1...v1.2.0) (2022-01-31)
 
 
