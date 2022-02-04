@@ -36,7 +36,7 @@
     "jwks-rsa": "^2.0.3"
   },
   "peerDependencies": {
-    "@apollo/gateway": "^0.26.3",
+    "@apollo/gateway": "^0.26.3 || ^0.29.0 || ^0.32.0 || ^0.33.0",
     "@nestjs/common": "^7.6.15 || ^8.0.0",
     "@nestjs/core": "^7.6.15 || ^8.0.0",
     "@nestjs/graphql": "^7.10.6 || ^8.0.0",
