@@ -1,3 +1,7 @@
+## [1.2.2](https://github.com/5-stones/nest-oidc/compare/v1.2.1...v1.2.2) (2022-02-08)
+
+
+
 ## [1.2.1](https://github.com/5-stones/nest-oidc/compare/v1.2.0...v1.2.1) (2022-02-04)
 
 
