@@ -13,6 +13,8 @@ A configurable OIDC library for NestJS and GraphQL or REST.
 - [Roles](#roles)
 - [Role Evaluators](#role-evaluators)
 - [JWT Mapping](#jwt-mapping)
+- [Advanced](#advanced)
+  - [Authenticating GraphQL Subscriptions](#authenticating-graphql-subscriptions)
 - [Release](#release)
 
 ## Install
@@ -325,6 +327,76 @@ import { AuthModule } from '@5stones/nest-oidc';
 })
 export class AppModule {}
 ```
+
+## Advanced
+
+#### Authenticating GraphQL Subscriptions
+
+The websocket spec doesn't support headers, so if you want to authenticate a
+GraphQL Subscription via the standard Guard & Role decorators you can do so, but
+you'll need to modify your `GraphQLModule` configuration. The below example will
+walk you through how to do it with the `graphql-ws` library.
+
+The first step is to make sure that you're passing the Auth token as a parameter
+through your websocket request. [Read more in the `graphql-ws` docs](https://github.com/enisdenjo/graphql-ws#user-content-apollo-client)
+
+Next you'll need to modify the `GraphQLModule`'s `onConnect` and `context`
+functions to map the token and the request. You [can read the NestJS documentation](https://docs.nestjs.com/graphql/subscriptions#authentication-over-websocket)
+on generally how to do this, but that documentation only deals with the validation
+of the token directly in the `onConnect` function. However to allow it to be
+done by the Guards you'll need to map the token into a header on a request object
+and then ensure that you're always returning a request to be processed by the
+`JwtStrategy`. See the example below:
+
+
+```ts
+// app.module.ts
+...
+import type { Context } from 'graphql-ws';
+
+...
+@Module({
+  imports: [
+    GraphQLModule.forRoot({
+      ...
+      subscriptions: {
+        'graphql-ws': {
+          onConnect: (context: Context<any>) => {
+            const { connectionParams, extra } = context;
+            const authToken = connectionParams?.Authorization;
+
+            if (authToken) {
+              // Add the auth token to the request object provided by `graphql-ws`
+              // NOTE: headers are lowercased in express. Using `Authorization`
+              // will result in a failure to authenticate.
+              extra.request.headers.authorization = authToken;
+            }
+          },
+        }
+      },
+      context: (context) => {
+        if (context?.req === undefined) {
+          // The jwt strategy requires a request with headers to perform jwt
+          // validation. If no request exists in the context object then we're
+          // dealing with a websocket connection. In that case pass along the
+          // request object provided by the `graphql-ws` context for validation.
+          context.req = context.extra.request;
+        }
+
+        // return the context object.
+        return context;
+      },
+    }),
+    ...
+  ],
+})
+export class AppModule implements NestModule {
+  ...
+}
+```
+
+Once this has been configured you'll be able to apply the `JwtAuthGuardGraphQL`
+and `Roles` decorators as you would on any other resolver, query, or mutation.
 
 ## Release
 
