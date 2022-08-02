@@ -1,3 +1,12 @@
+# [1.3.0](https://github.com/5-stones/nest-oidc/compare/v1.2.2...v1.3.0) (2022-08-02)
+
+
+### Features
+
+* **guards, decorators:** add the ability to specify an optional authentication guard ([4e4dcc5](https://github.com/5-stones/nest-oidc/commit/4e4dcc586c4209570596e67506351c0fdc07ccc5))
+
+
+
 ## [1.2.2](https://github.com/5-stones/nest-oidc/compare/v1.2.1...v1.2.2) (2022-02-08)
 
 
