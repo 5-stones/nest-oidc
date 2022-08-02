@@ -15,6 +15,7 @@ A configurable OIDC library for NestJS and GraphQL or REST.
 - [JWT Mapping](#jwt-mapping)
 - [Advanced](#advanced)
   - [Authenticating GraphQL Subscriptions](#authenticating-graphql-subscriptions)
+  - [Optional Authentication](#optional-authentication)
 - [Release](#release)
 
 ## Install
@@ -397,6 +398,13 @@ export class AppModule implements NestModule {
 
 Once this has been configured you'll be able to apply the `JwtAuthGuardGraphQL`
 and `Roles` decorators as you would on any other resolver, query, or mutation.
+
+#### Optional Authentication
+
+You can use the `IsAuthenticationOptional` decorrator on an endpoint or resolver
+in conjunction with an auth guard. If this is done so, then JWTs will populate
+`user` object as expected. If an invalid JWT is passed or no JWT is passed at
+all, then no user will be populated on the request.
 
 ## Release
 
