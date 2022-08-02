@@ -1,3 +1,4 @@
-export { Roles } from './roles.decorator';
-export { CurrentUserGraphQL } from './current-user-graphql.decorator';
-export { CurrentUser } from './current-user.decorator';
+export * from './current-user.decorator';
+export * from './current-user-graphql.decorator';
+export * from './is-authentication-optional.decorator'
+export * from './roles.decorator';
