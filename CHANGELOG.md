@@ -1,3 +1,12 @@
+# [2.0.0-rc.0](https://github.com/5-stones/nest-oidc/compare/v1.5.0...v2.0.0-rc.0) (2023-01-11)
+
+
+### Features
+
+* **nestjs:** upgrade library for compatibility with nestjs 9 ([31936d0](https://github.com/5-stones/nest-oidc/commit/31936d0a5cef3054b0f996116213490bf9d16879))
+
+
+
 # [1.5.0](https://github.com/5-stones/nest-oidc/compare/v1.4.0...v1.5.0) (2023-01-05)
 
 
