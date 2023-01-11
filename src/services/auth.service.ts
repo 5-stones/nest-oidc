@@ -1,4 +1,6 @@
-import { Injectable, Inject, HttpService } from '@nestjs/common';
+import { Injectable, Inject, BadRequestException } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
+import { lastValueFrom } from 'rxjs';
 import * as jsonwebtoken from 'jsonwebtoken';
 import { JwksClient } from 'jwks-rsa';
 import * as jexl from 'jexl';
@@ -52,13 +54,16 @@ export class AuthService {
   async oidcConfig(): Promise<any> {
     if (this._oidcConfig) return this._oidcConfig;
 
-    const response = await this.httpService
-      .get(`${this.oidcAuthority}/.well-known/openid-configuration`)
-      .toPromise()
-    ;
-
-    this._oidcConfig = response.data;
-    return this._oidcConfig;
+    try {
+      const source$ = this.httpService
+        .get(`${this.oidcAuthority}/.well-known/openid-configuration`)
+      ;
+      const response = await lastValueFrom(source$);
+      this._oidcConfig = response.data;
+      return this._oidcConfig;
+    } catch (err) {
+      throw new BadRequestException("There was an error when attempting to fetch openid-configuration", { cause: err });
+    }
   }
 
   async getPublicKey(rawJwtToken): Promise<string> {

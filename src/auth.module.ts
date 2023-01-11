@@ -1,4 +1,5 @@
-import { Module, HttpModule, DynamicModule } from '@nestjs/common';
+import { Module, DynamicModule } from '@nestjs/common';
+import { HttpModule } from '@nestjs/axios';
 import { PassportModule } from '@nestjs/passport';
 
 import { JWT_MAPPER, OIDC_AUTHORITY, ROLE_EVALUATORS } from './consts';
