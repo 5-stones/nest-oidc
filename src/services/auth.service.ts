@@ -5,8 +5,8 @@ import * as jsonwebtoken from 'jsonwebtoken';
 import { JwksClient } from 'jwks-rsa';
 import * as jexl from 'jexl';
 
-import { JWT_MAPPER, OIDC_AUTHORITY, ROLE_EVALUATORS } from '../consts';
-import { RoleEvaluator } from '../interfaces';
+import { JWT_MAPPER, OIDC_AUTHORITY, OIDC_CONFIG_REQUEST_OPTIONS, ROLE_EVALUATORS } from '../consts';
+import { OidcConfigRequestOptions, RoleEvaluator } from '../interfaces';
 
 const length = (elem: any) => elem ? elem.length : 0;
 const mapValue = (obj: any) => obj ? obj.map(value => ({ value })) : [];
@@ -37,6 +37,8 @@ export class AuthService {
     protected readonly evaluators: RoleEvaluator[],
     @Inject(OIDC_AUTHORITY)
     protected readonly oidcAuthority: string,
+    @Inject(OIDC_CONFIG_REQUEST_OPTIONS)
+    protected readonly oidcConfigRequestOptions: OidcConfigRequestOptions,
     @Inject(JWT_MAPPER)
     protected readonly jwtMapper: (payload: any) => any,
     protected readonly httpService: HttpService,
@@ -56,13 +58,13 @@ export class AuthService {
 
     try {
       const source$ = this.httpService
-        .get(`${this.oidcAuthority}/.well-known/openid-configuration`)
+        .get(`${this.oidcAuthority}/.well-known/openid-configuration`, this.oidcConfigRequestOptions)
       ;
       const response = await lastValueFrom(source$);
       this._oidcConfig = response.data;
       return this._oidcConfig;
     } catch (err) {
-      throw new BadRequestException("There was an error when attempting to fetch openid-configuration", { cause: err });
+      throw new BadRequestException("There was an error when attempting to fetch openid-configuration\n" + err, { cause: err });
     }
   }
 

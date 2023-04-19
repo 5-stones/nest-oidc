@@ -2,13 +2,14 @@ import { Module, DynamicModule } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { PassportModule } from '@nestjs/passport';
 
-import { JWT_MAPPER, OIDC_AUTHORITY, ROLE_EVALUATORS } from './consts';
-import { RoleEvaluator } from './interfaces';
+import { JWT_MAPPER, OIDC_AUTHORITY, OIDC_CONFIG_REQUEST_OPTIONS, ROLE_EVALUATORS } from './consts';
+import { OidcConfigRequestOptions, RoleEvaluator } from './interfaces';
 import { AuthService } from './services';
 import { JwtStrategy } from './strategies';
 
 export interface AuthModuleRegistrationOptions {
   oidcAuthority: string;
+  oidcConfigRequestOptions?: OidcConfigRequestOptions;
   roleEvaluators?: RoleEvaluator[];
   jwtMapper?: (payload: any) => any;
 }
@@ -28,6 +29,10 @@ export class AuthModule {
         {
           provide: OIDC_AUTHORITY,
           useValue: options.oidcAuthority,
+        },
+        {
+          provide: OIDC_CONFIG_REQUEST_OPTIONS,
+          useValue: options.oidcConfigRequestOptions,
         },
         {
           provide: ROLE_EVALUATORS,
