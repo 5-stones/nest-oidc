@@ -13,6 +13,7 @@ A configurable OIDC library for NestJS and GraphQL or REST.
 - [Roles](#roles)
 - [Role Evaluators](#role-evaluators)
 - [JWT Mapping](#jwt-mapping)
+- [OIDC Config Request](#oidc-config-request)
 - [Advanced](#advanced)
   - [Authenticating GraphQL Subscriptions](#authenticating-graphql-subscriptions)
   - [Optional Authentication](#optional-authentication)
@@ -323,6 +324,34 @@ import { AuthModule } from '@5stones/nest-oidc';
         email: payload.email,
         ...
       }),
+    }),
+  ],
+})
+export class AppModule {}
+```
+
+## OIDC Config Request
+
+If you need to configure http request for fetching oidc configuration (headers, auth, certificates, cors...), use the `oidcConfigRequestOptions`.
+
+```ts
+import { Module } from '@nestjs/common';
+import { AuthModule } from '@5stones/nest-oidc';
+
+@Module({
+  imports: [
+    ...
+    AuthModule.forRoot({
+      oidcAuthority: 'http://iam.app.com/auth/realms/app',
+      oidcConfigRequestOptions: {
+        headers: {
+            myheader: "custom header"
+        },
+        auth: {
+          username: 'janedoe',
+          password: 's00pers3cret'
+        }
+      }}),
     }),
   ],
 })
