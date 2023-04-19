@@ -351,7 +351,7 @@ import { AuthModule } from '@5stones/nest-oidc';
           username: 'janedoe',
           password: 's00pers3cret'
         }
-      }}),
+      },
     }),
   ],
 })
