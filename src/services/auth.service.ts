@@ -15,7 +15,6 @@ jexl.addTransform('mapValue', mapValue);
 
 type SecretOrKeyProviderCallback = (error, secret: false|string) => void;
 type SecretOrKeyProvider = (request, rawJwtToken, done: SecretOrKeyProviderCallback) => void;
-
 interface JwksKey {
   kid: string;
   kty: string;
@@ -26,7 +25,6 @@ interface JwksKey {
   x5c: string[];
   x5t: string;
 }
-
 @Injectable()
 export class AuthService {
   private _oidcConfig: any | null = null;
