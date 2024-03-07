@@ -35,7 +35,9 @@ export class AuthModule {
         },
         {
           provide: JWT_MAPPER,
-          useValue: options.jwtMapper ? options.jwtMapper : (payload) => payload,
+          useValue: options.jwtMapper
+            ? options.jwtMapper
+            : (payload) => payload,
         },
       ],
     };

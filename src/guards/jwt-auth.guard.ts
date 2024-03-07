@@ -1,4 +1,8 @@
-import { Injectable, ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  ExecutionContext,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -15,18 +19,24 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const isAuthOptional = this.reflector.get<boolean>(IS_AUTHENTICATION_OPTIONAL_TOKEN, context.getHandler());
+    const isAuthOptional = this.reflector.get<boolean>(
+      IS_AUTHENTICATION_OPTIONAL_TOKEN,
+      context.getHandler(),
+    );
 
     try {
-      await super.canActivate(context)
+      await super.canActivate(context);
     } catch (err) {
       const isUnauthorized = err instanceof UnauthorizedException;
-      if (!isUnauthorized || isUnauthorized && !isAuthOptional) {
+      if (!isUnauthorized || (isUnauthorized && !isAuthOptional)) {
         throw err;
       }
     }
 
-    const roles = this.reflector.get<string[]>(ROLES_TOKEN, context.getHandler());
+    const roles = this.reflector.get<string[]>(
+      ROLES_TOKEN,
+      context.getHandler(),
+    );
     if (!roles) {
       return true;
     }

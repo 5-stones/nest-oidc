@@ -4,10 +4,8 @@ export const ROLES_TOKEN = 'roles';
 
 export const Roles = (...roles: string[]) => {
   // check to see if any roles have been passed
-  const hasRoles: boolean = roles.length > 0
-    && !(roles.length === 1 && roles[0] === undefined);
-  ;
-
+  const hasRoles: boolean =
+    roles.length > 0 && !(roles.length === 1 && roles[0] === undefined);
   if (hasRoles) {
     return SetMetadata(ROLES_TOKEN, roles);
   } else {
