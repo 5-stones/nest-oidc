@@ -1,3 +1,12 @@
+# [2.0.0](https://github.com/5-stones/nest-oidc/compare/v2.0.0-rc.0...v2.0.0) (2024-03-07)
+
+
+### Features
+
+* **package,package-lock:** update packages for nestjs v10 support ([865fb88](https://github.com/5-stones/nest-oidc/commit/865fb88aa235f6c6d764344c2beb1ca6aeb9711c))
+
+
+
 # [2.0.0-rc.0](https://github.com/5-stones/nest-oidc/compare/v1.5.0...v2.0.0-rc.0) (2023-01-11)
 
 
