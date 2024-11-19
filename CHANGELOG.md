@@ -1,3 +1,12 @@
+## [2.0.1](https://github.com/5-stones/nest-oidc/compare/v2.0.0...v2.0.1) (2024-11-19)
+
+
+### Bug Fixes
+
+* **auth.service:** prevent crash when failing to fetch oidc info on boot ([e348792](https://github.com/5-stones/nest-oidc/commit/e34879229d17c6a3d8268abb27dfd48f0017bea0))
+
+
+
 # [2.0.0](https://github.com/5-stones/nest-oidc/compare/v2.0.0-rc.0...v2.0.0) (2024-03-07)
 
 
