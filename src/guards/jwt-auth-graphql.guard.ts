@@ -3,6 +3,7 @@ import { JwtAuthGuard } from './jwt-auth.guard';
 
 let graphql;
 try {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   graphql = require('@nestjs/graphql');
 } catch (e) {}
 

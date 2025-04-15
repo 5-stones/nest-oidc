@@ -86,7 +86,7 @@ export class AuthService implements OnModuleInit {
         })
         .catch((error) => {
           this.logger.error(`Error fetching public key: ${error}`);
-          // @ts-ignore (types don't match documentation)
+          // @ts-expect-error (types don't match documentation)
           done(error, false);
         });
     };
