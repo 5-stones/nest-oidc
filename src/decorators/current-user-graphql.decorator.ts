@@ -2,6 +2,7 @@ import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 
 let graphql;
 try {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   graphql = require('@nestjs/graphql');
 } catch (e) {}
 
